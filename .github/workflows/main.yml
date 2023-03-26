@@ -21,7 +21,9 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Terraform Init
-        run: terraform init
+        run: |
+          terraform init
+          terraform plan
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
