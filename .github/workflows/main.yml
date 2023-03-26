@@ -23,13 +23,11 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      - name: terraform plan
-        uses: dflook/terraform-plan@v1
+      - name: Terraform Plan
+        run: terraform plan -var aws_access_key=${{ secrets.AWS_ACCESS_KEY_ID }} -var aws_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
         
-      - name: terraform apply
-        uses: dflook/terraform-apply@v1
-        with:
-          auto_approve: true
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -var aws_access_key=${{ secrets.AWS_ACCESS_KEY_ID }} -var aws_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Save Terraform State
         uses: actions/upload-artifact@v2
@@ -46,4 +44,4 @@ jobs:
           
       - name: Terraform Destroy
         if: ${{ steps.prompt_destroy.outputs.response == 'yes' }}
-        run: terraform destroy -auto-approve
+        run: terraform destroy -auto-approve -var aws_access_key=${{ secrets.AWS_ACCESS_KEY_ID }} -var aws_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
