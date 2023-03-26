@@ -21,12 +21,15 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Terraform Init
-        run: |
-          terraform init
-          terraform plan
+        run: terraform init
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
+      - name: terraform plan
+        uses: dflook/terraform-plan@v1
+        
+      - name: terraform apply
+        uses: dflook/terraform-apply@v1
+        with:
+          auto_approve: true
 
       - name: Save Terraform State
         uses: actions/upload-artifact@v2
