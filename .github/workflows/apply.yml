@@ -9,7 +9,7 @@ on:
         default: 'yes'
 
 jobs:
-  apply:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,12 +38,7 @@ jobs:
           name: terraform-state
           path: terraform.tfstate
 
-  destroy:
-    name: Terraform Destroy
-    runs-on: ubuntu-latest
-    needs: apply
-    if: github.event.inputs.prompt == 'yes'
-    steps:
       - name: Terraform Destroy
+        if: github.event.inputs.prompt == 'yes'
         run: terraform destroy -auto-approve -var aws_access_key=${{ secrets.AWS_ACCESS_KEY_ID }} -var aws_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
