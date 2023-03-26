@@ -6,7 +6,7 @@ on:
       prompt:
         description: 'Do you want to destroy the infrastructure? (yes/no)'
         required: true
-        default: 'no'
+        default: 'yes'
 
 jobs:
   apply:
