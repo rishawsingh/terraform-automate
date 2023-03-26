@@ -34,14 +34,3 @@ jobs:
         with:
           name: terraform-state
           path: terraform.tfstate
-
-      - name: Prompt for Destroy
-        id: prompt_destroy
-        run: |
-          echo "Do you want to destroy the infrastructure? (yes/no)"
-          read response
-          echo "::set-output name=response::$response"
-          
-      - name: Terraform Destroy
-        if: ${{ steps.prompt_destroy.outputs.response == 'yes' }}
-        run: terraform destroy -auto-approve -var aws_access_key=${{ secrets.AWS_ACCESS_KEY_ID }} -var aws_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
