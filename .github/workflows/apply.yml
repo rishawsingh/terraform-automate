@@ -1,12 +1,15 @@
-name: Terraform Apply
+name: Terraform Apply and Destroy
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: 'Do you want to destroy the infrastructure? (yes/no)'
+        required: true
+        default: 'no'
 
 jobs:
-  build:
+  apply:
     runs-on: ubuntu-latest
 
     steps:
@@ -34,3 +37,35 @@ jobs:
         with:
           name: terraform-state
           path: terraform.tfstate
+
+  destroy:
+    name: Terraform Destroy
+    runs-on: ubuntu-latest
+    needs: apply
+    if: github.event.inputs.prompt == 'yes'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Prompt for Destroy
+        id: prompt_destroy
+        run: |
+          echo "Do you want to destroy the infrastructure? (yes/no)"
+          read response
+          echo "::set-output name=response::$response"
+          
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.1.5
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Destroy
+        if: ${{ steps.prompt_destroy.outputs.response == 'yes' }}
+        run: terraform destroy -auto-approve -var aws_access_key=${{ secrets.AWS_ACCESS_KEY_ID }} -var aws_secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
